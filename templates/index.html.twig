@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    {% block style %}
+        
+    {% endblock style %}
+
+    <title>{% block title %}Astronaute API{% endblock title %}</title>
+</head>
+<body class="fixed-sidebar">
+
+<div id="wrapper">
+    <h2>L'API des Astronautes</h2>
+    <div id="page-wrapper">
+        <div class="wrapper wrapper-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Path</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GET</td>
+                        <td>'.../astros'</td>
+                        <td>Get all astronautes</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td>.../astro</td>
+                        <td>Add new astronaute</td>
+                    </tr>
+                    <tr>
+                        <td>PUT</td>
+                        <td>.../astro/{id}</td>
+                        <td>Modify astronaute</td>
+                    </tr>
+                    <tr>
+                        <td>DELETE</td>
+                        <td>.../astro/{id}</td>
+                        <td>Remove astronaute</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% block script %}
+{% endblock script %}
+
+</body>
+</html>
