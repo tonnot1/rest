@@ -23,5 +23,20 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    App\Controller\Service\CreateService:
+        autowire: true
+
+    App\Controller\Service\UpdateService:
+        autowire: true
+
+    App\Controller\Service\ListService:
+        autowire: true
+
+    App\Controller\Service\FindeService:
+        autowire: true
+
+    App\Controller\Service\RemoveService:
+        autowire: true
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

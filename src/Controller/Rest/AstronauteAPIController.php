@@ -12,6 +12,11 @@ use App\Form\AstronauteType;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use App\Service\ListService;
+use App\Service\FindService;
+use App\Service\UpdateService;
+use App\Service\CreateService;
+use App\Service\RemoveService;
 
 /**
  * @Route("/api", name="api_")
@@ -21,13 +26,14 @@ class AstronauteAPIController extends AbstractFOSRestController
     /**
    *
    * @Rest\Get("/astro")
+   * 
+   * * @param ListService $listService
    *
    * @return Response
    */
-    public function listAction()
+    public function listAction(ListService $listService)
     {
-        $repository = $this->getDoctrine()->getRepository(Astronaute::class);
-        $astronautes = $repository->findall();
+        $astronautes = $listService->listAstronaute();
 
         return $this->handleView($this->view($astronautes));
     }
@@ -36,15 +42,13 @@ class AstronauteAPIController extends AbstractFOSRestController
      *
      * @Rest\Get("/astro/{id}")
      *
-     * @param Request $request
+     * @param FindService $findService
      *
      * @return Response
      */
-    public function findAction(Request $request)
+    public function findAction(FindService $findService)
     {
-        $em = $this->getDoctrine()->getManager();
-        $astronaute = $em->getRepository(Astronaute::class)
-            ->find($request->get('id'));
+        $astronaute = $findService->findAstronaute();
 
         return $this->handleView($this->view($astronaute));
     }
@@ -53,78 +57,45 @@ class AstronauteAPIController extends AbstractFOSRestController
      *
      * @Rest\Put("/astro/{id}")
      *
-     * @param Request $request
+     * @param UpdateService $updateService
      *
      * @return Response
      */
-    public function setAction(Request $request)
+    public function setAction(UpdateService $updateService, FindService $findService)
     {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
+        $updateService->updateAstronaute();
+        $astronaute = $findService->findAstronaute();
 
-        $serializer = new Serializer($normalizers, $encoders);
-
-        $em = $this->getDoctrine()->getManager();
-        $astronaute = $em->getRepository(Astronaute::class)
-            ->find($request->get('id'));
-        $em->flush();
-
-        $form = $this->createForm(AstronauteType::class, $astronaute);
-        $data = $serializer->decode($request->getContent(), 'json');
-
-        $form->submit($data);
-        if ($form->isSubmitted() && $form->isValid()) {
-          $em->flush();
-
-          return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
-        }
-
-        return $this->handleView($this->view($form->getErrors()));
+        return $this->handleView($this->view($astronaute));
+        
     }
 
     /**
      *
      * @Rest\Post("/astro")
      *
-     * @param Request $request
+     * @param CreateService $createService
      *
      * @return Response
      */
-    public function addAction(Request $request)
+    public function addAction(CreateService $createService, ListService $listService)
     {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
+        $createService->createAstronaute();
+        $astronautes = $listService->listAstronaute();
 
-        $serializer = new Serializer($normalizers, $encoders);
-
-        $astronaute = new Astronaute();
-        $form = $this->createForm(AstronauteType::class, $astronaute);
-
-        $data = $serializer->decode($request->getContent(), 'json');
-        $form->submit($data);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-          $em = $this->getDoctrine()->getManager();
-          $em->persist($form->getData());
-          $em->flush();
-
-          return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
-        }
-
-        return $this->handleView($this->view($form->getErrors()));
+        return $this->handleView($this->view($astronautes));
     }
 
     /**
      *
      * @Rest\Delete("/astro/{id}")
-     * @param Request $request
+     * @param RemoveService $removeService
      */
-    public function removeAction(Request $request)
+    public function removeAction(RemoveService $removeService, ListService $listService)
     {
-        $em = $this->getDoctrine()->getManager();
-        $astronaute = $em->getRepository(Astronaute::class)
-            ->find($request->get('id'));
-        $em->remove($astronaute);
-        $em->flush();
+        $removeService->removeAstronaute();
+        $astronautes = $listService->listAstronaute();
+
+        return $this->handleView($this->view($astronautes));
     }
 }
