@@ -1,28 +1,34 @@
 astro_api_homepage:
    path: /
    controller: App\Controller\Web\DefaultController::indexAction
-
+   
 astro_list:
    path: /astro
-   controller: App\Controller\Rest\AstronauteAPIController::listAction
+   controller: App\Controller\Rest\ListAction
    methods: GET
 
 astro_find:
    path: /astro/{astro}
-   controller: App\Controller\Rest\AstronauteAPIController::findAction
+   controller: App\Controller\Rest\FindAction
+   requirements:
+      astro: \d+
    methods: GET
 
 astro_edit:
    path: /astro/{astro}
-   controller: App\Controller\Rest\AstronauteAPIController::setAction
+   controller: App\Controller\Rest\UpdateAction
+   requirements:
+      astro: \d+
    methods: PUT
 
 astro_add:
    path: /astro
-   controller: App\Controller\Rest\AstronauteAPIController::addAction
+   controller: App\Controller\Rest\AddAction
    methods: POST
 
 astro_remove:
    path: /astro/{astro}
-   controller: App\Controller\Rest\AstronauteAPIController::removeAction
+   controller: App\Controller\Rest\RemoveAction
+   requirements:
+      astro: \d+
    methods: DELETE

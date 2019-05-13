@@ -38,5 +38,17 @@ services:
     App\Controller\Service\RemoveService:
         autowire: true
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Controller\ListAction:
+        autowire: true
+
+    App\Controller\FindAction:
+        autowire: true
+
+    App\Controller\UpdateAction:
+        autowire: true
+    
+    App\Controller\AddAction:
+        autowire: true
+    
+    App\Controller\RemoveAction:
+        autowire: true
