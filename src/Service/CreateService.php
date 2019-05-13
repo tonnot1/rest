@@ -35,12 +35,13 @@ class CreateService
         try {
             $astronaute = new Astronaute;
 
-            $form = $this->formFactory->create(AstronauteType::class, $astronaute);
+            $form = $this->formFactory->createBuilder(AstronauteType::class, $astronaute);
             $data = $serializer->decode($request->getContent(), 'json');
 
-            $form->submit($data);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $this->entityManager->persist($form->getData());
+            $formBuild = $form->getForm();
+            $formBuild->submit($data);
+            if ($formBuild->isSubmitted() && $formBuild->isValid()) {
+                $this->entityManager->persist($formBuild->getData());
                 $this->entityManager->flush();
             }
         } catch (Exception $e) {

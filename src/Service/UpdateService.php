@@ -36,11 +36,12 @@ class UpdateService
             $astronaute = $this->entityManager->getRepository(Astronaute::class)
                             ->find($request->get('id'));
 
-            $form = $this->formFactory->create(AstronauteType::class, $astronaute);
+            $form = $this->formFactory->createBuilder(AstronauteType::class, $astronaute);
             $data = $serializer->decode($request->getContent(), 'json');
                 
-            $form->submit($data);
-            if ($form->isSubmitted() && $form->isValid()) {
+            $formBuild = $form->getForm();
+            $formBuild->submit($data);
+            if ($formBuild->isSubmitted() && $formBuild->isValid()) {
                 $this->entityManager->flush();
             }
         } catch (Exception $e) {

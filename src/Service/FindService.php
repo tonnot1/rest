@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class FindService
 {
+    
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack) {
@@ -24,9 +25,10 @@ class FindService
             $astronaute = $this->entityManager->getRepository(Astronaute::class)
                             ->find($request->get('id'));
 
-            return $astronaute;
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
+
+        return $astronaute;
     }
 }
