@@ -3,35 +3,39 @@
 namespace App\Controller\Rest;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Symfony\Component\HttpFoundation\RequestStack;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use App\Service\FindService;
-use App\Service\UpdateService;
+use App\Application\Command\Astronaute\UpdateCommand;
+use App\Application\Query\Astronaute\FindQuery;
+use League\Tactician\CommandBus;
 
 /**
  * @Route("/api", name="api_")
  */
 class UpdateAction extends AbstractFOSRestController
 {
+    /** @var RequestStack */
+    private $request; 
 
-    /** @var UpdateService */
-    private $updateService; 
+    /** @var CommandBus */
+    private $commandBus;
 
-    /** @var FindService */
-    private $findService;
+    public function __construct(CommandBus $commandBus, RequestStack $request) {
 
-    public function __construct(UpdateService $updateService, FindService $findService) {
-        $this->updateService = $updateService;
-        $this->findService = $findService;
+        $this->commandBus = $commandBus;
+        $this->request = $request;
     }
     /**
      * @Rest\Put("/astro/{id}")
      */
     public function __invoke()
     {
-        $this->updateService->updateAstronaute();
-        $astronaute = $this->findService->findAstronaute();
+        $command = new UpdateCommand($this->request->getCurrentRequest()->get('id'));
+        $this->commandBus->handle($command);
+
+        $query = new FindQuery($this->request->getCurrentRequest()->get('id'));
+        $astronaute = $this->commandBus->handle($query);
 
         return $this->handleView($this->view($astronaute));
     }

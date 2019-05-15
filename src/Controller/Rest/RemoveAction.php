@@ -3,35 +3,27 @@
 namespace App\Controller\Rest;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Symfony\Component\HttpFoundation\RequestStack;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use App\Entity\Astronaute;
-use App\Form\AstronauteType;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use App\Service\ListService;
-use App\Service\FindService;
-use App\Service\UpdateService;
-use App\Service\CreateService;
-use App\Service\RemoveService;
+use League\Tactician\CommandBus;
+use App\Application\Command\Astronaute\RemoveCommand;
+use App\Application\Query\Astronaute\ListQuery;
 
 /**
  * @Route("/api", name="api_")
  */
-class RemoveAction
+class RemoveAction extends AbstractFOSRestController
 {
-    /** @var RemoveService */
-    private $removeAction;
+    /** @var RequestStack */
+    private $request;
 
-    /** @var ListService */
-    private $listService;
+    /** @var CommandBus */
+    private $commandBus;
 
-    public function __construct(RemoveService $removeAction, ListService $listService) {
-        $this->removeAction = $removeAction;
-        $this->listService = $listService;
+    public function __construct(CommandBus $commandBus, RequestStack $request) {
+        $this->commandBus = $commandBus;
+        $this->request = $request;
     }
 
     /**
@@ -42,8 +34,11 @@ class RemoveAction
      */
     public function __invoke()
     {
-        $this->removeService->removeAstronaute();
-        $astronautes = $this->listService->listAstronaute();
+        $command = new RemoveCommand($this->request->getCurrentRequest()->get('id'));
+        $this->commandBus->handle($command);
+
+        $query = new ListQuery();
+        $astronautes = $this->commandBus->handle($query);
 
         return $this->handleView($this->view($astronautes));
     }

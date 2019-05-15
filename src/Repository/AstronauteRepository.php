@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Astronaute;
+use App\Repository\AstronauteRepositoryInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -12,39 +14,31 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Astronaute[]    findAll()
  * @method Astronaute[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AstronauteRepository extends ServiceEntityRepository
+class AstronauteRepository extends ServiceEntityRepository implements AstronauteRepositoryInterface
 {
-    public function __construct(RegistryInterface $registry)
+    /** @var EntityManager */
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager, RegistryInterface $registry)
     {
         parent::__construct($registry, Astronaute::class);
+        $this->entityManager = $entityManager;
     }
 
-    // /**
-    //  * @return Astronaute[] Returns an array of Astronaute objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function add($data): void
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->entityManager->persist($data);
+        $this->entityManager->flush();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Astronaute
+    public function set(Astronaute $astronaute): void
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $this->entityManager->flush($astronaute);
     }
-    */
+
+    public function remove(Astronaute $astronaute): void
+    {
+        $this->entityManager->remove($astronaute);
+        $this->entityManager->flush();
+    }
 }

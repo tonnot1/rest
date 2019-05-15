@@ -3,21 +3,21 @@
 namespace App\Controller\Rest;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use App\Service\ListService;
+use App\Application\Query\Astronaute\ListQuery;
+use League\Tactician\CommandBus;
 
 /**
  * @Route("/api", name="api_")
  */
 class ListAction extends AbstractFOSRestController
 {
-    /** @var ListeService */
-    private $listeService; 
+    /** @var CommandBus */
+    private $commandBus;
 
-    public function __construct(ListService $listService) {
-        $this->listeService = $listeService;
+    public function __construct(CommandBus $commandBus) {
+        $this->commandBus = $commandBus;
     }
 
    /**
@@ -25,7 +25,8 @@ class ListAction extends AbstractFOSRestController
    */
     public function __invoke()
     {
-        $astronautes = $this->listService->listAstronaute();
+        $query = new ListQuery();
+        $astronautes = $this->commandBus->handle($query);
 
         return $this->handleView($this->view($astronautes));
     }

@@ -3,21 +3,28 @@
 namespace App\Controller\Rest;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use App\Service\FindService;
+use App\Application\Query\Astronaute\FindQuery;
+use League\Tactician\CommandBus;
+// use App\Service\FindService;
 
 /**
  * @Route("/api", name="api_")
  */
 class FindAction extends AbstractFOSRestController
 {
-    /** @var FindService */
-    private $findService;
+    /** @var RequestStack */
+    private $request;
 
-    public function __construct(FindService $findService) {
-        $this->findService = $findService;
+    /** @var CommandBus */
+    private $commandBus;
+
+    public function __construct(CommandBus $commandBus, RequestStack $request) {
+    
+        $this->commandBus = $commandBus;
+        $this->request = $request;
     }
 
     /**
@@ -25,7 +32,8 @@ class FindAction extends AbstractFOSRestController
      */
     public function __invoke()
     {
-        $astronaute = $this->findService->findAstronaute();
+        $query = new FindQuery($this->request->getCurrentRequest()->get('id'));
+        $astronaute = $this->commandBus->handle($query);
 
         return $this->handleView($this->view($astronaute));
     }

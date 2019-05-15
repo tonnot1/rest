@@ -23,20 +23,39 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    App\Controller\Service\CreateService:
-        autowire: true
+    App\Application\Command\Astronaute\RemoveHandler:
+        tags:
+            - { name: tactician.handler, command: App\Application\Command\Astronaute\RemoveCommand }
+        arguments:
+            - '@App\Repository\AstronauteRepositoryInterface'
 
-    App\Controller\Service\UpdateService:
-        autowire: true
+    App\Application\Command\Astronaute\AddHandler:
+        tags:
+            - { name: tactician.handler, command: App\Application\Command\Astronaute\AddCommand }
+        arguments:
+            - '@App\Repository\AstronauteRepositoryInterface'
+            - '@request_stack' 
+            - '@form.factory'
 
-    App\Controller\Service\ListService:
-        autowire: true
+    App\Application\Command\Astronaute\UpdateHandler:
+        tags:
+            - { name: tactician.handler, command: App\Application\Command\Astronaute\UpdateCommand }
+        arguments:
+            - '@App\Repository\AstronauteRepositoryInterface'
+            - '@request_stack' 
+            - '@form.factory'
 
-    App\Controller\Service\FindeService:
-        autowire: true
+    App\Application\Query\Astronaute\FindQueryHandler:
+        tags:
+            - { name: tactician.handler, command: App\Application\Query\Astronaute\FindQuery }
+        arguments:
+            - '@App\Repository\AstronauteRepositoryInterface'
 
-    App\Controller\Service\RemoveService:
-        autowire: true
+    App\Application\Query\Astronaute\ListQueryHandler:
+        tags:
+            - { name: tactician.handler, command: App\Application\Query\Astronaute\ListQuery }
+        arguments:
+            - '@App\Repository\AstronauteRepositoryInterface'
 
     App\Controller\ListAction:
         autowire: true
